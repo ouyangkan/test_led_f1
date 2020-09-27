@@ -545,12 +545,12 @@ ARM Macro Assembler    Page 9
               00000000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
-ork --depend=test_led\startup_stm32f103xe.d -otest_led\startup_stm32f103xe.o -I
-C:\Users\Admin\Desktop\code\test_led\MDK-ARM\RTE -IG:\work\keil\ARM\PACK\ARM\CM
-SIS\4.2.0\CMSIS\Include -IG:\work\keil\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device
-\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 51
-4" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_HD SETA 1" --list=startup_
-stm32f103xe.lst startup_stm32f103xe.s
+ork --depend=.\startup_stm32f103xe.d -o.\startup_stm32f103xe.o -IC:\Users\Admin
+\Desktop\work\LiteOS_STM32_DEMO\test_led_f1\MDK-ARM\RTE -IG:\work\keil\ARM\PACK
+\ARM\CMSIS\4.2.0\CMSIS\Include -IG:\work\keil\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5
+\Device\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION 
+SETA 514" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_HD SETA 1" --list=s
+tartup_stm32f103xe.lst startup_stm32f103xe.s
 
 
 
