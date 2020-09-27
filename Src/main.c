@@ -23,8 +23,14 @@
 #include "usart.h"
 #include "gpio.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "math.h"
+#include "time.h"
+#include "los_task.h"
+//#include "los_api_task.h"
+//#include "los_inspect_entry.h"
 
 /* USER CODE END Includes */
 
@@ -56,6 +62,63 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static UINT32 g_uwTskHiID;
+#define TSK_PRIOR_HI 8
+
+static UINT32 Example_TaskHi(VOID)
+{
+    UINT32 uwRet = LOS_OK;
+
+    printf("Enter TaskHi Handler.\r\n");
+
+    /* task delay 5 ticks, task will be suspend */
+		while(1)
+		{
+			uwRet = LOS_TaskDelay(2);
+			printf("this is a test thread\r\n");
+//			HAL_Delay(2000);
+			if (uwRet != LOS_OK)
+			{
+					printf("Delay Task Failed.\r\n");
+					return LOS_NOK;
+			}
+			HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+		}
+    
+
+    /* task resumed */
+//    dprintf("TaskHi LOS_TaskDelay Done.\r\n");
+
+    /* suspend self */
+//    uwRet = LOS_TaskSuspend(g_uwTskHiID);
+//    if (uwRet != LOS_OK)
+//    {
+//        dprintf("Suspend TaskHi Failed.\r\n");
+//        uwRet = LOS_InspectStatusSetByID(LOS_INSPECT_TASK, LOS_INSPECT_STU_ERROR);
+//        if (LOS_OK != uwRet)
+//        {
+//            dprintf("Set Inspect Status Err.\r\n");
+//        }
+//        return LOS_NOK;
+//    }
+
+//    dprintf("TaskHi LOS_TaskResume Success.\r\n");
+
+//    uwRet = LOS_InspectStatusSetByID(LOS_INSPECT_TASK, LOS_INSPECT_STU_SUCCESS);
+//    if (LOS_OK != uwRet)
+//    {
+//        dprintf("Set Inspect Status Err.\r\n");
+//    }
+
+//    /* delete self */
+//    if(LOS_OK != LOS_TaskDelete(g_uwTskHiID))
+//    {
+//        dprintf("TaskHi delete failed .\r\n");
+//        return LOS_NOK;
+//    }
+
+    return LOS_OK;
+}
 
 /* USER CODE END 0 */
 
@@ -67,11 +130,14 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 	GPIO_TypeDef* GPIO_PORT[] = {LED1_GPIO_Port};
- 
 	const uint16_t GPIO_PIN[] = {LED1_Pin};
+	UINT32 uwRet = LOS_OK;
+  TSK_INIT_PARAM_S stInitParam;
+	
+	
   /* USER CODE END 1 */
   
-
+	
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -92,10 +158,29 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	
+	printf("begin test uart\r\n");
+	LOS_TaskLock();
+	
+	stInitParam.pfnTaskEntry = (TSK_ENTRY_FUNC)Example_TaskHi;
+	stInitParam.usTaskPrio = TSK_PRIOR_HI;
+	stInitParam.pcName = "HIGH_NAME";
+	stInitParam.uwStackSize = LOSCFG_BASE_CORE_TSK_DEFAULT_STACK_SIZE;
+	/* create high prio task */
+	uwRet = LOS_TaskCreate(&g_uwTskHiID, &stInitParam);
+	if (uwRet != LOS_OK)
+	{
+			LOS_TaskUnlock();
 
+			printf("Example_TaskHi create Failed!\r\n");
+			return LOS_NOK;
+	}
+	printf("Example_TaskHi create Success!\r\n");
+	
+	/* unlock task schedue */
+  LOS_TaskUnlock();
+	
   /* USER CODE END 2 */
- 
- 
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -104,7 +189,7 @@ int main(void)
     HAL_GPIO_TogglePin(GPIO_PORT[0], GPIO_PIN[0]);
 		HAL_Delay(2000);
 		/* USER CODE END WHILE */
-
+		
     /* USER CODE BEGIN 3 */
 		
   }
@@ -149,7 +234,11 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+int fputc(int ch, FILE *f)
+{
+	HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, 10);
+	return ch;
+}
 /* USER CODE END 4 */
 
 /**

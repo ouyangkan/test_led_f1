@@ -58,7 +58,7 @@ extern "C" {
  * System clock (unit: HZ)
  */
 #ifndef OS_SYS_CLOCK
-#define OS_SYS_CLOCK                                        (100000000UL)
+#define OS_SYS_CLOCK                                        (72000000UL)
 #endif
 
 /**
